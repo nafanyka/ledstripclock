@@ -117,7 +117,7 @@ class TimeHelper {
             if (offset == 0) {
                 snprintf(zonename, sizeof(zonename), "UTC");
             } else {
-                snprintf(zonename, sizeof(zonename), "UTC%c%u", (offset >= 0) ? '+' : '-', abs(offset));
+                snprintf(zonename, sizeof(zonename), "UTC%c%u", (offset >= 0) ? '+' : '-', abs(offset) % 100);
             }
             return zonename;
         }
