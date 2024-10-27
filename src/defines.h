@@ -38,7 +38,7 @@ struct ApplicationConfig {
     int8 tz_offset_value = 2;
     uint8 tz_offset_idx = 14;
     bool tz_dst = true;
-    uint32 ntp_refresh_period = 7200;
+    uint32 ntp_refresh_period = 1800;
 };
 
 struct CurrentState {

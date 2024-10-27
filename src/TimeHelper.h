@@ -17,19 +17,11 @@ extern tm ntp_tm;
 extern ApplicationConfig appConfig;
 extern NTPClient timeClient;
 
-#define MY_TZ "UTC-2UTC-3,M3.5.0/3,M10.5.0/4"
-
-
 class TimeHelper {
     public:
         void getFromRTC() 
         {
-            
-        }
-
-        void tick() 
-        {
-
+            //todo get hours and minutes with lead zero
         }
 
         void printRTC() 
@@ -88,7 +80,6 @@ class TimeHelper {
                 DateTime dt = DateTime(localTime);
                 rtc.adjust(dt);
             }
-            
         }
 
         
@@ -113,7 +104,7 @@ class TimeHelper {
 
         const char* getTZName(int8 offset) 
         {
-            static char zonename[6];
+            static char zonename[7];
             if (offset == 0) {
                 snprintf(zonename, sizeof(zonename), "UTC");
             } else {

@@ -25,7 +25,7 @@ class EepromSettings {
                 ApplicationConfig ac;
                 EepromSettings::setApplicationConfig(ac, true);
                 //
-                CurrentState cs;
+                // CurrentState cs;
                 // EepromSettings::setCurrentState(cs, true);
             } else {
                 Serial.println("EEPROM. Restore");
