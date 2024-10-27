@@ -5,12 +5,13 @@
 #include "I2C_eeprom.h"
 #include <GyverPortal.h>
 #include "EepromSettings.h"
+#include "TimeHelper.h"
 
 
 extern GyverPortal ui;
 extern ApplicationConfig appConfig;
 extern CurrentState currentState;
-
+extern TimeHelper timeHelper;
 
 void initMainPortal();
 void buildMainPortal();
@@ -82,9 +83,12 @@ void actionMainPortal(GyverPortal& p) {
     }
     appConfigUpdated = appConfigUpdated || ui.clickBool("as.tz_dst", appConfig.tz_dst);
     appConfigUpdated = appConfigUpdated || ui.clickInt("as.ntp_refresh", appConfig.ntp_refresh_period);
+    if (ui.click("as.ntp_server") || ui.click("as.tz_offset") || ui.click("as.tz_dst") || ui.click("as.ntp_refresh")) {
+        timeHelper.setupNTPClient();
+    }
+    
 
     if (appConfigUpdated) {
-        //TODO timer
         EepromSettings::setApplicationConfig(appConfig);
     }
 

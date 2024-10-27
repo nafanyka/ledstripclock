@@ -42,7 +42,9 @@ void initWifiPortal() {
     ui.attach(actionWifiPortal);
 
     // работа портала
-    while (ui.tick());
+    while (ui.tick()) {
+        ArduinoOTA.handle();
+    };
 }
 
 void actionWifiPortal(GyverPortal& p) {

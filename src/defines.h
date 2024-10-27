@@ -8,7 +8,7 @@
 extern I2C_eeprom ee;
 
 #define EEPROM_VERSION 1
-#define RECONNECT_INTERVAL 10000
+#define RECONNECT_INTERVAL 30000
 
 const uint8_t eepromVersion = EEPROM_VERSION;
 
