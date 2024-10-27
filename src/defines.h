@@ -9,6 +9,7 @@ extern I2C_eeprom ee;
 
 #define EEPROM_VERSION 1
 #define RECONNECT_INTERVAL 30000
+#define READ_SENSORS_INTERVAL 5000
 
 const uint8_t eepromVersion = EEPROM_VERSION;
 
@@ -25,6 +26,7 @@ const uint8_t eepromVersion = EEPROM_VERSION;
 
 // Pins
 #define PIN_WIFI_RESET      12
+#define PIN_DISPLAY         14
 
 
 // Types
@@ -44,12 +46,25 @@ struct ApplicationConfig {
 struct CurrentState {
 };
 
+struct SensorData
+{
+    float pressure_mm;
+    float pressure_pa;
+    float temperature_press;
+    float temperature;
+    float humidity;
+    float dew_point_temperature;
+    float illumination;
+};
+
+
 
 
 
 void setupPins()
 {
     pinMode(PIN_WIFI_RESET, INPUT_PULLUP);
+    pinMode(PIN_DISPLAY, OUTPUT);
 }
 
 void initEEPROM()

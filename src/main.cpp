@@ -17,6 +17,10 @@
 // #include <TimeLib.h>
 // #include <Timezone.h>
 #include "TimeHelper.h"
+#include <Adafruit_BMP280.h>
+#include <Adafruit_HTU21DF.h>
+#include <hp_BH1750.h>
+#include "Sensors.h"
 
 
 WiFiUDP ntpUDP;
@@ -25,15 +29,21 @@ NTPClient timeClient(ntpUDP);
 LoginPass lp;
 ApplicationConfig appConfig;
 CurrentState currentState;
+Sensors sensors;
 //
 GTimer reconnectTimer(MS);
 GTimer checkConnectTimer(MS);
-GTimer tmp(MS, 1000);
+GTimer readSensorsTimer(MS);
+GTimer tmp(MS, 2000);
 //
 RTC_DS3231 rtc;
 TimeHelper timeHelper;
 //
-
+Adafruit_BMP280 bmp;
+Adafruit_HTU21DF htu;
+hp_BH1750 lux;
+float luxValue = 0;
+//
 GyverPortal ui;
 I2C_eeprom ee(EEPROM_ADDRESS, EEPROM_SIZE);
 
@@ -107,6 +117,9 @@ void setup() {
   }
 
   rtc.begin();
+  bmp.begin(BMP280_ADDRESS_ALT);
+  htu.begin();
+  lux.begin(BH1750_TO_GROUND);
   delay(10);
 
   initMainPortal();
@@ -115,14 +128,18 @@ void setup() {
   timeHelper.refreshNTP();
   
   // ArduinoOTA.setPassword("lonelybinary");
-
-  Serial.println(appConfig.ntp_server);
-  //configTime(MY_TZ, appConfig.ntp_server);
   
   tmp.start();
+
   checkConnectTimer.setInterval(30000);
   checkConnectTimer.start();
+
+  sensors.init();
+  sensors.readSensors();
+  readSensorsTimer.setInterval(READ_SENSORS_INTERVAL);
+  readSensorsTimer.start();
 }
+
 
 
 
@@ -130,7 +147,6 @@ void loop() {
   ArduinoOTA.handle();
   ui.tick();
   timeHelper.refreshNTP();
-  // delay(50);
 
   if (reconnectTimer.isReady()) {
     // reconnect
@@ -142,49 +158,22 @@ void loop() {
       connectWiFi();
     }
   }
+
+  if (readSensorsTimer.isReady())
+  {
+    sensors.readSensors();
+  }
+  
   
   if (tmp.isReady())
   {
     timeHelper.printRTC();
+    sensors.debug();
   }
 
-// byte error, address;
-//   int nDevices;
- 
-//   Serial.println("Scanning...");
- 
-//   nDevices = 0;
-//   for(address = 1; address < 127; address++ )
-//   {
-//     // The i2c_scanner uses the return value of
-//     // the Write.endTransmisstion to see if
-//     // a device did acknowledge to the address.
-//     Wire.beginTransmission(address);
-//     error = Wire.endTransmission();
- 
-//     if (error == 0)
-//     {
-//       Serial.print("I2C device found at address 0x");
-//       if (address<16)
-//         Serial.print("0");
-//       Serial.print(address,HEX);
-//       Serial.println("  !");
- 
-//       nDevices++;
-//     }
-//     else if (error==4)
-//     {
-//       Serial.print("Unknown error at address 0x");
-//       if (address<16)
-//         Serial.print("0");
-//       Serial.println(address,HEX);
-//     }    
-//   }
-//   if (nDevices == 0)
-//     Serial.println("No I2C devices found\n");
-//   else
-//     Serial.println("done\n");
- 
-//   delay(5000);           // wait 5 seconds for next scan
+  if (lux.hasValue() == true) { // non blocking reading
+    luxValue = lux.getLux();
+    lux.start();
+  }
 }
 

@@ -38,8 +38,6 @@ class EepromSettings {
         static void getLoginPass(LoginPass& lp)
         {
             ee.readBlock(EEA_LP, (uint8_t *) &lp, sizeof(LoginPass));
-            Serial.println(lp.ssid);
-            Serial.println(lp.pass);
         }
 
         static void setLoginPass(LoginPass lp)
